@@ -38,4 +38,4 @@
 
     - name: Show onedrive sync task output
       ansible.builtin.debug:
-        msg: "{{ sync_output }}"
+        msg: "{{ sync_output.stdout_lines[-500:] | join('\n') }}"
