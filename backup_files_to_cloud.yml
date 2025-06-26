@@ -1,0 +1,17 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+    - name: Check if 'onedrive' command is available
+      ansible.builtin.command: which onedrive
+      register: cmd_check
+      ignore_errors: yes
+
+    - name: Fail if 'onedrive' is not found
+      ansible.builtin.fail:
+        msg: "'onedrive' command not found on the host. Aborting playbook."
+      when: cmd_check.rc != 0
+
+    - name: Proceed if 'onedrive' is available
+      ansible.builtin.debug:
+        msg: "'onedrive' command is available, continuing the playbook..."
