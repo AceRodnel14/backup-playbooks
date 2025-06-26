@@ -15,3 +15,27 @@
     - name: Proceed if 'onedrive' is available
       ansible.builtin.debug:
         msg: "'onedrive' command is available, continuing the playbook..."
+
+    - name: Check if directory {{ onedrive_dir }} exists
+      ansible.builtin.stat:
+        path: "{{ onedrive_dir }}"
+      register: dir_stat
+
+    - name: Fail if directory {{ onedrive_dir }} does not exist
+      ansible.builtin.fail:
+        msg: "Directory {{ onedrive_dir }} does not exist!"
+      when: not dir_stat.stat.exists or not dir_stat.stat.isdir
+
+    - name: Proceed if directory {{ onedrive_dir }} exists
+      ansible.builtin.debug:
+        msg: "Directory {{ onedrive_dir }} exists, continuing..."
+
+    - name: Start Onedrive Sync since folder exists and onedrive is installed
+      ansible.builtin.shell: |
+        cd {{ onedrive_dir }}
+        onedrive -s -v -v --upload-only
+      register: sync_output
+
+    - name: Show onedrive sync task output
+      ansible.builtin.debug:
+        msg: "{{ sync_output }}"
